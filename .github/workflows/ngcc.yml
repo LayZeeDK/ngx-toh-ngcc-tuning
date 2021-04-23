@@ -21,9 +21,6 @@ jobs:
           - 11.0.x
           - 11.1.x
           - 11.2.x
-        ngcc-create-ivy-entry-points:
-          - true
-          - false
         ngcc-property:
           - fesm2015
           - esm2015
@@ -31,6 +28,9 @@ jobs:
           - browser
           - module
           - main
+        ngcc-create-ivy-entry-points:
+          - true
+          - false
 
     steps:
       - uses: actions/checkout@v2
@@ -46,7 +46,9 @@ jobs:
       - run: npm install --global pnpm
       - run: pnpm install --frozen-lockfile false --verify-store-integrity false
 
-      - run: pnpx ngcc --properties ${{ matrix.ngcc-property }} --create-ivy-entry-points
+      - run: pnpx ngcc --first-only --properties ${{ matrix.ngcc-property }} es2015 browser module main --create-ivy-entry-points
         if: matrix.ngcc-create-ivy-entry-points == true
-      - run: pnpx ngcc --properties ${{ matrix.ngcc-property }}
+      - run: pnpx ngcc --first-only --properties ${{ matrix.ngcc-property }} es2015 browser module main
         if: matrix.ngcc-create-ivy-entry-points == false
+
+      - run: pnpm build
