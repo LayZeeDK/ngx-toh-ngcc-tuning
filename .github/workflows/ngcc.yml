@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         ngcc-create-ivy-entry-points:
           - true
@@ -33,9 +34,9 @@ jobs:
 
       - run: yarn install --non-interactive --silent
 
-      - run: npx ngcc --first-only --properties es2015 --create-ivy-entry-points
+      - run: npx ngcc --create-ivy-entry-points
         if: matrix.ngcc-create-ivy-entry-points == true
-      - run: npx ngcc --first-only --properties es2015
+      - run: npx ngcc
         if: matrix.ngcc-create-ivy-entry-points == false
 
       - run: yarn build
