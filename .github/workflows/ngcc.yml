@@ -1,5 +1,9 @@
 name: "NGCC tuning CI workflow"
 
+env:
+  NODE_LATEST: 12.x
+  NODE_OPTIONS: --max_old_space_size=6144
+
 on:
   push:
     branches: [main]
@@ -36,20 +40,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Use Node.js 12.x
-        uses: actions/setup-node@v1
+      - name: Use Node.js ${{ env.NODE_LATEST }}
+        uses: actions/setup-node@v2
         with:
-          node-version: 12.x
+          node-version: ${{ env.NODE_LATEST }}
       - uses: ngworker/angular-versions-action@v3
         with:
           angular-version: ${{ matrix.angular-version }}
 
-      - run: npm install --global pnpm
-      - run: pnpm install --frozen-lockfile false --verify-store-integrity false
+      - run: yarn install --non-interactive --silent
 
       - run: npx ngcc --first-only --properties ${{ matrix.ngcc-properties }} --create-ivy-entry-points
         if: matrix.ngcc-create-ivy-entry-points == true
       - run: npx ngcc --first-only --properties ${{ matrix.ngcc-properties }}
         if: matrix.ngcc-create-ivy-entry-points == false
 
-      - run: pnpm build
+      - run: yarn build
