@@ -11,36 +11,6 @@ on:
     branches: [main]
 
 jobs:
-  build-9_0_x:
-    runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        ngcc-create-ivy-entry-points:
-          - true
-          - false
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Use Node.js ${{ env.NODE_LATEST }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ env.NODE_LATEST }}
-      - uses: ngworker/angular-versions-action@v3
-        with:
-          angular-version: 9.0.x
-
-      - run: yarn install --non-interactive --silent
-
-      - run: npx ngcc --create-ivy-entry-points
-        if: matrix.ngcc-create-ivy-entry-points == true
-      - run: npx ngcc
-        if: matrix.ngcc-create-ivy-entry-points == false
-
-      - run: yarn build
-
   build:
     runs-on: ubuntu-latest
 
@@ -48,6 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         angular-version:
+          - 9.0.x
           - 9.1.x
           - 10.0.x
           - 10.1.x
