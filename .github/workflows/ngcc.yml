@@ -10,7 +10,7 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  build-ngcc-in-place:
     runs-on: ubuntu-latest
 
     strategy:
@@ -18,34 +18,44 @@ jobs:
       matrix:
         angular-version:
           - 9.0.x
+          - 11.1.x
+        ngcc-properties:
+          - es2015 module browser main
+          - module browser main
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ env.NODE_LATEST }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_LATEST }}
+      - uses: ngworker/angular-versions-action@v3
+        with:
+          angular-version: ${{ matrix.angular-version }}
+
+      - run: yarn install --non-interactive --silent
+
+      - run: npx ngcc --first-only --properties ${{ matrix.ngcc-properties }}
+
+      - run: yarn build
+
+  build-ngcc-entry-points:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        angular-version:
           - 9.1.x
           - 10.0.x
           - 10.1.x
           - 10.2.x
           - 11.0.x
-          - 11.1.x
           - 11.2.x
         ngcc-properties:
           - es2015 module browser main
           - module browser main
-        ngcc-create-ivy-entry-points:
-          - true
-        exclude:
-          - angular-version: 9.0.x
-          - angular-version: 11.1.x
-        include:
-          - angular-version: 9.0.x
-            ngcc-create-ivy-entry-points: false
-            ngcc-properties: es2015 module browser main
-          - angular-version: 9.0.x
-            ngcc-create-ivy-entry-points: false
-            ngcc-properties: module browser main
-          - angular-version: 11.1.x
-            ngcc-create-ivy-entry-points: false
-            ngcc-properties: es2015 module browser main
-          - angular-version: 11.1.x
-            ngcc-create-ivy-entry-points: false
-            ngcc-properties: module browser main
 
     steps:
       - uses: actions/checkout@v2
@@ -61,8 +71,5 @@ jobs:
       - run: yarn install --non-interactive --silent
 
       - run: npx ngcc --first-only --properties ${{ matrix.ngcc-properties }} --create-ivy-entry-points
-        if: matrix.ngcc-create-ivy-entry-points == true
-      - run: npx ngcc --first-only --properties ${{ matrix.ngcc-properties }}
-        if: matrix.ngcc-create-ivy-entry-points == false
 
       - run: yarn build
