@@ -28,6 +28,24 @@ jobs:
         ngcc-properties:
           - es2015 module browser main
           - module browser main
+        ngcc-create-ivy-entry-points:
+          - true
+        exclude:
+          - angular-version: 9.0.x
+          - angular-version: 11.1.x
+        include:
+          - angular-version: 9.0.x
+            ngcc-create-ivy-entry-points: false
+            ngcc-properties: es2015 module browser main
+          - angular-version: 9.0.x
+            ngcc-create-ivy-entry-points: false
+            ngcc-properties: module browser main
+          - angular-version: 11.1.x
+            ngcc-create-ivy-entry-points: false
+            ngcc-properties: es2015 module browser main
+          - angular-version: 11.1.x
+            ngcc-create-ivy-entry-points: false
+            ngcc-properties: module browser main
 
     steps:
       - uses: actions/checkout@v2
@@ -43,5 +61,8 @@ jobs:
       - run: yarn install --non-interactive --silent
 
       - run: npx ngcc --first-only --properties ${{ matrix.ngcc-properties }} --create-ivy-entry-points
+        if: matrix.ngcc-create-ivy-entry-points == true
+      - run: npx ngcc --first-only --properties ${{ matrix.ngcc-properties }}
+        if: matrix.ngcc-create-ivy-entry-points == false
 
       - run: yarn build
