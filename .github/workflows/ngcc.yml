@@ -6,7 +6,6 @@ env:
 
 on:
   push:
-    branches: [main]
   pull_request:
     branches: [main]
 
@@ -27,15 +26,8 @@ jobs:
           - 11.1.x
           - 11.2.x
         ngcc-properties:
-          - fesm2015 es2015 browser module main
-          - esm2015 es2015 browser module main
-          - es2015 browser module main
-          - browser module main
-          - module main
-          - main
-        ngcc-create-ivy-entry-points:
-          - true
-          - false
+          - es2015 module browser main
+          - module browser main
 
     steps:
       - uses: actions/checkout@v2
@@ -51,8 +43,5 @@ jobs:
       - run: yarn install --non-interactive --silent
 
       - run: npx ngcc --first-only --properties ${{ matrix.ngcc-properties }} --create-ivy-entry-points
-        if: matrix.ngcc-create-ivy-entry-points == true
-      - run: npx ngcc --first-only --properties ${{ matrix.ngcc-properties }}
-        if: matrix.ngcc-create-ivy-entry-points == false
 
       - run: yarn build
